@@ -1,7 +1,7 @@
 
 # coding: utf-8
 
-# In[ ]:
+# In[73]:
 
 import pandas as pd
 pd.set_option('display.max_columns', None)  
@@ -17,19 +17,19 @@ import numpy as np
 np.set_printoptions(threshold='nan')
 
 
-# In[181]:
+# In[74]:
 
 df = pd.read_csv('train.tsv', sep='\t', index_col =None)
 df
 
 
-# In[ ]:
+# In[75]:
 
 good = df[df["Label"]==1]    #good
 bad = df[df["Label"]==2]    #bad
 
 
-# In[185]:
+# In[76]:
 
 #Numericals
 Attributes = ["Attribute2","Attribute5","Attribute8","Attribute11","Attribute13","Attribute16","Attribute18"]
@@ -101,7 +101,7 @@ for attribute in Attributes:
     #fig.savefig('fig1.png', bbox_inches='tight')
 
 
-# In[180]:
+# In[77]:
 
 #for categorical data
 
@@ -121,6 +121,156 @@ for item in attributesCategorical:
     attributeBad.value_counts().plot(kind='bar',label= stringBad, color = '#eae727')
     plt.legend()
     plt.show()
+
+
+# In[78]:
+
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.decomposition import TruncatedSVD
+
+withoutLabel = df.ix[:, df.columns != 'Label' ]
+withoutLabelAndId = withoutLabel.ix[:, withoutLabel.columns != 'Id' ]
+
+Count_Row = withoutLabelAndId.shape[0]
+
+listOfDocuments= []
+for i in range(Count_Row):
+    documents = withoutLabelAndId.iloc[i]
+    documents = documents.to_string(index=False , header = False).encode('utf8')
+    listOfDocuments.append(documents)
+    
+    
+tupleOfDocuments = tuple(listOfDocuments)
+
+
+tfidf_vectorizer = TfidfVectorizer()
+tfidf_matrix = tfidf_vectorizer.fit_transform(tupleOfDocuments)
+
+#SVD
+tfidf_matrix = np.array(TruncatedSVD(n_components=10).fit_transform(tfidf_matrix))
+print tfidf_matrix
+
+
+# In[79]:
+
+X = np.array(tfidf_matrix)
+y = []
+for i in range(Count_Row):
+    y.append(df["Label"].iloc[i]) 
+    
+
+y = np.array(y)
+
+print y
+
+
+# In[80]:
+
+from sklearn.svm import SVC
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.naive_bayes import BernoulliNB, MultinomialNB, GaussianNB
+from sklearn.model_selection import KFold, cross_val_score
+from sklearn.metrics import *
+
+
+random_state = np.random.RandomState(0)
+k_fold = KFold(n_splits=10,shuffle = True)
+
+clf = SVC(kernel = 'linear' , C = 1.0, probability=True, random_state=random_state)
+clf.fit(X, y)
+accuracySVM = cross_val_score(clf, X, y, cv=k_fold, n_jobs=-1 , scoring = 'accuracy')
+accuracyMeanSVM =np.mean(accuracySVM)
+print accuracySVM
+print accuracyMeanSVM
+
+clf = RandomForestClassifier(n_estimators=80)
+clf.fit(X, y)
+accuracyRF = cross_val_score(clf, X, y, cv=k_fold, n_jobs=-1 , scoring = 'accuracy')
+accuracyMeanRF =np.mean(accuracyRF)
+print accuracyRF
+print accuracyMeanRF
+
+clf = GaussianNB()
+clf.fit(X, y)
+accuracyNB = cross_val_score(clf, X, y, cv=k_fold, n_jobs=-1 , scoring = 'accuracy')
+accuracyMeanNB =np.mean(accuracyNB)
+print accuracyNB
+print accuracyMeanNB
+
+
+# In[81]:
+
+import csv
+
+with open('EvaluationMetric_10fold.csv', 'wb') as fp:
+    writer = csv.writer(fp, delimiter='\t') 
+    l = [(' ','Statistic Measure', 'Naive Bayes', 'Random Forest', 'SVM'),
+         (' ','Accuracy', accuracyMeanNB, accuracyMeanRF, accuracyMeanSVM)]
+    writer.writerows(l)
+    
+evalDf = pd.read_csv('EvaluationMetric_10fold.csv',sep='\t',encoding="utf-8",index_col=0)
+evalDf
+
+
+# In[82]:
+
+dfTest = pd.read_csv('test.tsv',sep='\t',encoding="utf-8")
+
+withoutId = dfTest.ix[:, dfTest.columns != 'Id' ]
+
+withoutId
+
+
+
+# In[84]:
+
+#figuring out categories for testSet
+
+Count_RowTest = dfTest.shape[0]
+
+listOfDocumentsTest= []
+IdList = []
+for i in range(Count_RowTest):
+    documents = withoutId.iloc[i]
+    IdList.append(dfTest['Id'].iloc[i])
+    documents = documents.to_string(index=False , header = False).encode('utf8')
+    listOfDocumentsTest.append(documents)
+    
+tupleOfDocumentsTest = tuple(listOfDocumentsTest)    
+
+tfidf_vectorizer = TfidfVectorizer()
+tfidf_matrixTest = tfidf_vectorizer.fit_transform(tupleOfDocumentsTest)
+
+#SVD
+tfidf_matrixTest = np.array(TruncatedSVD(n_components = 10).fit_transform(tfidf_matrixTest))
+
+
+clf = GaussianNB()
+clf.fit(X, y)
+
+categories = clf.predict(tfidf_matrixTest)
+
+TestList = []
+
+for i in range(len(categories)):
+    if (categories[i]==1):
+         TestList.append("Good")
+    elif (categories[i]==2):
+         TestList.append("Bad")
+
+FinalTestList = zip(IdList, TestList)
+
+with open('testSet_Predictions.csv', 'wb') as fp:
+    writer = csv.writer(fp, delimiter='\t') 
+    l = [(' ','Client_ID', 'Predicted_Label')]
+    
+    for item in FinalTestList:
+        l.append((' ',item[0],item[1]))
+         
+    writer.writerows(l)
+    
+dfPredict = pd.read_csv('testSet_Predictions.csv',sep='\t',encoding="utf-8",index_col=0)
+dfPredict    
 
 
 # In[ ]:
