@@ -1,7 +1,7 @@
 
 # coding: utf-8
 
-# In[73]:
+# In[15]:
 
 import pandas as pd
 pd.set_option('display.max_columns', None)  
@@ -17,19 +17,19 @@ import numpy as np
 np.set_printoptions(threshold='nan')
 
 
-# In[74]:
+# In[16]:
 
 df = pd.read_csv('train.tsv', sep='\t', index_col =None)
 df
 
 
-# In[75]:
+# In[17]:
 
 good = df[df["Label"]==1]    #good
 bad = df[df["Label"]==2]    #bad
 
 
-# In[76]:
+# In[18]:
 
 #Numericals
 Attributes = ["Attribute2","Attribute5","Attribute8","Attribute11","Attribute13","Attribute16","Attribute18"]
@@ -101,7 +101,7 @@ for attribute in Attributes:
     #fig.savefig('fig1.png', bbox_inches='tight')
 
 
-# In[77]:
+# In[19]:
 
 #for categorical data
 
@@ -123,7 +123,7 @@ for item in attributesCategorical:
     plt.show()
 
 
-# In[78]:
+# In[20]:
 
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.decomposition import TruncatedSVD
@@ -151,7 +151,7 @@ tfidf_matrix = np.array(TruncatedSVD(n_components=10).fit_transform(tfidf_matrix
 print tfidf_matrix
 
 
-# In[79]:
+# In[21]:
 
 X = np.array(tfidf_matrix)
 y = []
@@ -164,7 +164,7 @@ y = np.array(y)
 print y
 
 
-# In[80]:
+# In[22]:
 
 from sklearn.svm import SVC
 from sklearn.ensemble import RandomForestClassifier
@@ -198,7 +198,7 @@ print accuracyNB
 print accuracyMeanNB
 
 
-# In[81]:
+# In[23]:
 
 import csv
 
@@ -212,7 +212,7 @@ evalDf = pd.read_csv('EvaluationMetric_10fold.csv',sep='\t',encoding="utf-8",ind
 evalDf
 
 
-# In[82]:
+# In[24]:
 
 dfTest = pd.read_csv('test.tsv',sep='\t',encoding="utf-8")
 
@@ -222,7 +222,7 @@ withoutId
 
 
 
-# In[84]:
+# In[25]:
 
 #figuring out categories for testSet
 
@@ -271,6 +271,84 @@ with open('testSet_Predictions.csv', 'wb') as fp:
     
 dfPredict = pd.read_csv('testSet_Predictions.csv',sep='\t',encoding="utf-8",index_col=0)
 dfPredict    
+
+
+# In[68]:
+
+import math
+from __future__ import division
+
+firstFeature = df['Attribute1']
+firstFeature = pd.Series(firstFeature)
+#feature
+
+secondFeature = df['Attribute2']
+secondFeature = pd.Series(secondFeature)
+
+probabilitiesFirst = np.array(firstFeature.value_counts()/800);
+
+#print probabilitiesFirst
+
+
+entropiesFirst = []
+for i in range(len(probabilitiesFirst)):
+    mathem = -probabilitiesFirst[i]*math.log(probabilitiesFirst[i],2)
+    entropiesFirst.append(mathem)
+
+parentEntropy = sum(entropiesFirst)
+
+    infoGain = parentEntropy - sumEntropies   #auto edo 8elei ftiaksimo
+infoGain
+
+
+# In[73]:
+
+dfAttr = pd.read_csv('train.tsv',sep='\t',encoding="utf-8")
+
+dfAttr = dfAttr.ix[:, dfAttr.columns != 'Id' ]
+dfAttr = dfAttr.ix[:, dfAttr.columns != 'Label' ]
+
+
+dfAttr = dfAttr.ix[:, dfAttr.columns != 'Attribute1' ]
+dfAttr
+
+Count_RowAttr = dfAttr.shape[0]
+
+listOfDocumentsAttr= []
+for i in range(Count_RowAttr):
+    documents = dfAttr.iloc[i]
+    documents = documents.to_string(index=False , header = False).encode('utf8')
+    listOfDocumentsAttr.append(documents)
+    
+    
+tupleOfDocumentsAttr = tuple(listOfDocumentsAttr)
+
+
+tfidf_vectorizer = TfidfVectorizer()
+tfidf_matrixAttr = tfidf_vectorizer.fit_transform(tupleOfDocuments)
+
+#SVD
+tfidf_matrixAttr = np.array(TruncatedSVD(n_components=10).fit_transform(tfidf_matrixAttr))
+
+X = np.array(tfidf_matrixAttr)
+y = []
+for i in range(Count_RowAttr):
+    y.append(df["Label"].iloc[i]) 
+    
+
+y = np.array(y)
+
+print y
+
+
+k_fold = KFold(n_splits=10,shuffle = True)
+
+clf = GaussianNB()
+clf.fit(X, y)
+accuracyNB = cross_val_score(clf, X, y, cv=k_fold, n_jobs=-1 , scoring = 'accuracy')
+accuracyMeanNB =np.mean(accuracyNB)
+print accuracyNB
+print accuracyMeanNB
 
 
 # In[ ]:
