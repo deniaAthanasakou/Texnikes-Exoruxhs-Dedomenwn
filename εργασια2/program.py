@@ -1,7 +1,7 @@
 
 # coding: utf-8
 
-# In[1]:
+# In[21]:
 
 import pandas as pd
 pd.set_option('display.max_columns', None)  
@@ -21,25 +21,21 @@ np.set_printoptions(threshold='nan')
 import math
 from __future__ import division
 
-
-# In[2]:
-
-df = pd.read_csv('train.tsv', sep='\t', index_col =None)
-df
+import os
 
 
-# In[3]:
+# In[22]:
+
+df = pd.read_csv('train.tsv',sep='\t',encoding="utf-8")
 
 good = df[df["Label"]==1]    #good
 bad = df[df["Label"]==2]    #bad
 
-
-# In[4]:
-
 #Numericals
 Attributes = ["Attribute2","Attribute5","Attribute8","Attribute11","Attribute13","Attribute16","Attribute18"]
 
-for attribute in Attributes: 
+for attribute in Attributes:
+    
     Attribute_good = good[[attribute]]
     Attribute_bad = bad[[attribute]]
     
@@ -100,13 +96,19 @@ for attribute in Attributes:
 
     #Set title
     plt.title(attribute)
+    
+    figBox = plt.gcf()
     plt.show()
 
-    # Save the figure
-    #fig.savefig('fig1.png', bbox_inches='tight')
+    # Save figure
+    path = 'Output/Box Plots/'
+    if not os.path.isdir(path): os.makedirs(path)
+    filename = 'box_plot%s.png' % attribute
+    filename = os.path.join(path, filename)
+    figBox.savefig(filename)
 
 
-# In[5]:
+# In[23]:
 
 #for categorical data
 
@@ -125,10 +127,20 @@ for item in attributesCategorical:
     attributeGood.value_counts().plot(kind='bar',label= stringGood, color = '#9129e7' )
     attributeBad.value_counts().plot(kind='bar',label= stringBad, color = '#eae727')
     plt.legend()
+    
+    figHist = plt.gcf()
     plt.show()
+    
+    # Save figure
+    path = 'Output/Histogram Plots/'
+    if not os.path.isdir(path): os.makedirs(path)
+    filename = 'hist_plot%s.png' % item
+    filename = os.path.join(path, filename)
+    figHist.savefig(filename)
+    
 
 
-# In[6]:
+# In[24]:
 
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.decomposition import TruncatedSVD
@@ -153,30 +165,25 @@ tfidf_matrix = tfidf_vectorizer.fit_transform(tupleOfDocuments)
 
 #SVD
 tfidf_matrix = np.array(TruncatedSVD(n_components=10).fit_transform(tfidf_matrix))
-print tfidf_matrix
 
 
-# In[7]:
+# In[25]:
 
 X = np.array(tfidf_matrix)
 y = []
 for i in range(Count_Row):
     y.append(df["Label"].iloc[i]) 
     
-
 y = np.array(y)
 
-print y
 
-
-# In[8]:
+# In[26]:
 
 from sklearn.svm import SVC
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.naive_bayes import BernoulliNB, MultinomialNB, GaussianNB
 from sklearn.model_selection import KFold, cross_val_score
 from sklearn.metrics import *
-
 
 random_state = np.random.RandomState(0)
 k_fold = KFold(n_splits=10,shuffle = True)
@@ -206,7 +213,7 @@ print accuracyNB
 print accuracyMeanNB
 
 
-# In[9]:
+# In[27]:
 
 import csv
 
@@ -220,16 +227,14 @@ evalDf = pd.read_csv('EvaluationMetric_10fold.csv',sep='\t',encoding="utf-8",ind
 evalDf
 
 
-# In[10]:
+# In[28]:
 
 dfTest = pd.read_csv('test.tsv',sep='\t',encoding="utf-8")
 
 withoutId = dfTest.ix[:, dfTest.columns != 'Id' ]
 
-withoutId
 
-
-# In[11]:
+# In[29]:
 
 #figuring out categories for testSet
 
@@ -252,7 +257,7 @@ tfidf_matrixTest = tfidf_vectorizer.fit_transform(tupleOfDocumentsTest)
 tfidf_matrixTest = np.array(TruncatedSVD(n_components = 10).fit_transform(tfidf_matrixTest))
 
 
-clf = GaussianNB()
+clf = RandomForestClassifier(n_estimators=80)#GaussianNB()
 clf.fit(X, y)
 
 categories = clf.predict(tfidf_matrixTest)
@@ -280,56 +285,7 @@ dfPredict = pd.read_csv('testSet_Predictions.csv',sep='\t',encoding="utf-8",inde
 dfPredict    
 
 
-# In[12]:
-
-import math
-from __future__ import division
-
-firstFeature = df['Attribute1']
-firstFeature = pd.Series(firstFeature)
-#feature
-
-secondFeature1 = df['Attribute2']
-secondFeature = np.histogram(secondFeature1, bins=5, range=None, normed=False, weights=None)
-secondFeature = pd.Series(secondFeature)    #Numerical needs to be transformed
-#print secondFeature1
-#print "woa"
-#print secondFeature
-#print "k"
-
-#secondFeature = pd.qcut(secondFeature1, 5)
-#print secondFeature
-#print "haha"
-
-
-probabilitiesFirst = np.array(firstFeature.value_counts()/800);
-
-print probabilitiesFirst
-
-
-entropiesFirst = []
-for i in range(len(probabilitiesFirst)):
-    mathem = -probabilitiesFirst[i]*math.log(probabilitiesFirst[i],2)    # -pi*log2(pi)
-    entropiesFirst.append(mathem)
-
-parentEntropy = sum(entropiesFirst)
-print parentEntropy
-
-
-#infoGain = parentEntropy - average entropy children
-
-
-
-#infoGain = parentEntropy - sumEntropies   #auto edo 8elei ftiaksimo
-#infoGain
-
-
-# In[13]:
-
-
-
-
-# In[14]:
+# In[30]:
 
 def entropy(num1,num2):
     a = num1/(num1+num2)
@@ -338,12 +294,7 @@ def entropy(num1,num2):
     return mathem
 
 
-# In[25]:
-
-entropy(561,239)
-
-
-# In[27]:
+# In[31]:
 
 Count_Row = df.shape[0]
 print Count_Row
@@ -361,12 +312,11 @@ parentEntropy = entropy(counts[0],counts[1])
 print parentEntropy
 
 
-# In[149]:
+# In[32]:
 
 attributesCategorical = ['Attribute1','Attribute3','Attribute4','Attribute6','Attribute7','Attribute9','Attribute10'
               ,'Attribute12','Attribute14','Attribute15','Attribute17','Attribute19','Attribute20']
 
-#attributesCategorical = ['Attribute1']
 infoGain = []
 for attribute in attributesCategorical:   
     
@@ -411,12 +361,11 @@ for attribute in attributesCategorical:
 print infoGain
 
 
-# In[150]:
+# In[33]:
 
 AttributesNumerical = ["Attribute2","Attribute5","Attribute8","Attribute11","Attribute13","Attribute16","Attribute18"]
 group_names = ['Very Low', 'Low', 'Medium', 'High', 'Very High']
 
-#AttributesNumerical = ["Attribute16"]
 for attribute in AttributesNumerical:  
      
     feature = df[attribute]
@@ -469,32 +418,34 @@ for attribute in AttributesNumerical:
 print infoGain
 
 
-# In[153]:
+# In[34]:
 
 sortInfoGain = sorted(infoGain, key=lambda x: x[1])
-print sortInfoGain
-print "Value"
 sortInfoGainValue = sorted(infoGain, key=lambda x: x[0])
-print sortInfoGainValue
+
+setAttr = []
+for x in range(len(sortInfoGainValue)):
+    string = str(sortInfoGainValue[x][1])
+    finalstring = string.replace(string,"Attribute"+string)
+    setAttr.append(finalstring)
+
+#setAttr = setAttr[:-1]  #ola ektos apo to teleutaio
 
 
-# In[ ]:
+# In[35]:
 
 dfAttr = pd.read_csv('train.tsv',sep='\t',encoding="utf-8")
 
 dfAttr = dfAttr.ix[:, dfAttr.columns != 'Id' ]
 dfAttr = dfAttr.ix[:, dfAttr.columns != 'Label' ]
-#dfAttrInitial = dfAttr
+dfAttrInitial = dfAttr
 
 accuracyMeanList = []
 
-Attributes = ["Attribute1","Attribute2","Attribute3","Attribute4","Attribute5","Attribute6","Attribute7","Attribute8","Attribute9","Attribute10","Attribute11","Attribute12","Attribute13","Attribute14","Attribute15","Attribute16","Attribute17","Attribute18","Attribute19"]
-for attribute in Attributes:
+for attribute in setAttr:
 
-    #dfAttr = dfAttrInitial.ix[:, dfAttrInitial.columns != attribute ]
+    dfAttr = dfAttrInitial.ix[:, dfAttrInitial.columns != attribute ]
     dfAttr = dfAttr.ix[:, dfAttr.columns != attribute ]
-    print attribute
-    print dfAttr
 
     Count_RowAttr = dfAttr.shape[0]
 
@@ -531,10 +482,57 @@ for attribute in Attributes:
     clf.fit(X, y)
     accuracyNB = cross_val_score(clf, X, y, cv=k_fold, n_jobs=-1 , scoring = 'accuracy')
     accuracyMeanNB =np.mean(accuracyNB)
-    #print accuracyNB
-    #print accuracyMeanNB
     accuracyMeanList.append(accuracyMeanNB)
+
+
+# In[36]:
+
+plt.figure(figsize=(25,10))
+x = range(len(accuracyMeanList))
+plt.xticks(x, setAttr)
+
+plt.plot(x,accuracyMeanList, marker='o',color='#4A148C')
+
+
+plt.xlabel('Attributes',size = 25)
+plt.ylabel('Accuracies',size = 25)
+plt.title('Accuracies depending on attributes',size = 25)
+plt.grid(True)
+
+figAccur = plt.gcf()
+
+plt.show()
+
+# Save figure
+path = 'Output/'
+if not os.path.isdir(path): os.makedirs(path)
+filename = 'accuraciesAttributes.png'
+filename = os.path.join(path, filename)
+figAccur.savefig(filename)
+
+plt.clf()
+plt.cla()
+plt.close()
+
+
+# In[37]:
+
+with open('infoGain.csv', 'wb') as fp:
+    writer = csv.writer(fp, delimiter='\t') 
+    l = [(' ','Attributes', 'Information Gain')]
     
-print "accuracyMeanList" 
-print accuracyMeanList
+    for x in range(len(sortInfoGainValue)):
+        string = str(sortInfoGainValue[x][1])
+        finalstring = string.replace(string,"Attribute"+string)
+        l.append((' ',finalstring,sortInfoGainValue[x][0]))
+         
+    writer.writerows(l)
+    
+dfinfo = pd.read_csv('infoGain.csv',sep='\t',encoding="utf-8",index_col=0)
+dfinfo
+
+
+# In[ ]:
+
+
 
