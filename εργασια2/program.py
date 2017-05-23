@@ -1,7 +1,7 @@
 
 # coding: utf-8
 
-# In[19]:
+# In[1]:
 
 import pandas as pd
 pd.set_option('display.max_columns', None)  
@@ -280,7 +280,205 @@ dfPredict = pd.read_csv('testSet_Predictions.csv',sep='\t',encoding="utf-8",inde
 dfPredict    
 
 
+# In[12]:
+
+import math
+from __future__ import division
+
+firstFeature = df['Attribute1']
+firstFeature = pd.Series(firstFeature)
+#feature
+
+secondFeature1 = df['Attribute2']
+secondFeature = np.histogram(secondFeature1, bins=5, range=None, normed=False, weights=None)
+secondFeature = pd.Series(secondFeature)    #Numerical needs to be transformed
+#print secondFeature1
+#print "woa"
+#print secondFeature
+#print "k"
+
+#secondFeature = pd.qcut(secondFeature1, 5)
+#print secondFeature
+#print "haha"
+
+
+probabilitiesFirst = np.array(firstFeature.value_counts()/800);
+
+print probabilitiesFirst
+
+
+entropiesFirst = []
+for i in range(len(probabilitiesFirst)):
+    mathem = -probabilitiesFirst[i]*math.log(probabilitiesFirst[i],2)    # -pi*log2(pi)
+    entropiesFirst.append(mathem)
+
+parentEntropy = sum(entropiesFirst)
+print parentEntropy
+
+
+#infoGain = parentEntropy - average entropy children
+
+
+
+#infoGain = parentEntropy - sumEntropies   #auto edo 8elei ftiaksimo
+#infoGain
+
+
 # In[13]:
+
+
+
+
+# In[14]:
+
+def entropy(num1,num2):
+    a = num1/(num1+num2)
+    b = num2/(num1+num2)
+    mathem = -a*math.log(a,2) -b*math.log(b,2)
+    return mathem
+
+
+# In[25]:
+
+entropy(561,239)
+
+
+# In[27]:
+
+Count_Row = df.shape[0]
+print Count_Row
+
+labelFeature = df['Label']
+#labelFeature = pd.Series(labelFeature)
+#feature
+
+counts = np.array(labelFeature.value_counts());
+
+print counts
+
+parentEntropy = entropy(counts[0],counts[1])
+       
+print parentEntropy
+
+
+# In[149]:
+
+attributesCategorical = ['Attribute1','Attribute3','Attribute4','Attribute6','Attribute7','Attribute9','Attribute10'
+              ,'Attribute12','Attribute14','Attribute15','Attribute17','Attribute19','Attribute20']
+
+#attributesCategorical = ['Attribute1']
+infoGain = []
+for attribute in attributesCategorical:   
+    
+    rating_probs = df.groupby(attribute).size().div(len(df))
+   
+    probabilities = []
+     
+    for k,v in rating_probs.iteritems():
+        if v>0:
+            probabilities.append((k,v))
+            
+        
+
+
+    a = df.groupby([attribute,'Label']).size()
+
+    keys = list([a.keys()[x][0] for x in range(len(a.keys()))])
+
+    values = list([i for i in a])
+
+    allVal = zip(keys,values)
+
+    terms =[]
+
+    r = zip(allVal,allVal[1:])[::2]
+    
+    counter=0
+   
+    for i in r:
+        
+        entr1 = entropy(i[0][1],i[1][1])
+        result = probabilities[counter][1]*entr1
+        terms.append(result)
+        counter+=1
+
+    entropyAttr = sum(terms)
+    numAttribute = attribute.replace('Attribute', '')
+    numAttribute = int(numAttribute)
+
+
+    infoGain.append(((parentEntropy - entropyAttr),numAttribute))
+print infoGain
+
+
+# In[150]:
+
+AttributesNumerical = ["Attribute2","Attribute5","Attribute8","Attribute11","Attribute13","Attribute16","Attribute18"]
+group_names = ['Very Low', 'Low', 'Medium', 'High', 'Very High']
+
+#AttributesNumerical = ["Attribute16"]
+for attribute in AttributesNumerical:  
+     
+    feature = df[attribute]
+    attributeCut = pd.cut(feature, 5, labels = group_names)
+
+    d = {attribute : pd.Series(attributeCut),
+            'Label' : pd.Series(df['Label'])}
+
+    d = pd.DataFrame(d)   #correct
+
+
+    a = d.groupby([attribute,'Label']).size()  
+
+    rating_probs = d.groupby(attribute).size().div(len(d))
+
+    
+    probabilities = []
+    
+    
+    for k,v in rating_probs.iteritems():
+        if v>0:
+            probabilities.append((k,v))
+
+
+    keys = list([a.keys()[x][0] for x in range(len(a.keys()))])
+
+    values = list([i for i in a])
+
+    allVal = zip(keys,values)
+
+    terms =[]
+
+    r = zip(allVal,allVal[1:])[::2]
+
+    
+    for i in range(len(r)):
+
+        entr2 = entropy(r[i][0][1],r[i][1][1])
+        result = probabilities[i][1]*entr2
+
+        terms.append(result)
+
+
+    entropyAttr = sum(terms)
+    
+    numAttribute = attribute.replace('Attribute', '')
+    numAttribute = int(numAttribute)
+
+    infoGain.append(((parentEntropy - entropyAttr),numAttribute))
+print infoGain
+
+
+# In[153]:
+
+sortInfoGain = sorted(infoGain, key=lambda x: x[1])
+print sortInfoGain
+print "Value"
+sortInfoGainValue = sorted(infoGain, key=lambda x: x[0])
+print sortInfoGainValue
+
+
+# In[ ]:
 
 dfAttr = pd.read_csv('train.tsv',sep='\t',encoding="utf-8")
 
@@ -339,132 +537,4 @@ for attribute in Attributes:
     
 print "accuracyMeanList" 
 print accuracyMeanList
-
-
-# In[20]:
-
-def entropy(num1,num2):
-    a = num1/(num1+num2)
-    b = num2/(num1+num2)
-    mathem = -a*math.log(a,2) -b*math.log(b,2)
-    return mathem
-
-
-# In[21]:
-
-Count_Row = df.shape[0]
-print Count_Row
-
-labelFeature = df['Label']
-labelFeature = pd.Series(labelFeature)
-#feature
-
-counts = np.array(labelFeature.value_counts());
-
-print counts
-
-entropiesLabel = []
-
-entropiesLabel.append(entropy(counts[0],counts[1]))
-       
-
-parentEntropy = sum(entropiesLabel)
-print parentEntropy
-
-
-# In[27]:
-
-attributesCategorical = ['Attribute1','Attribute3','Attribute4','Attribute6','Attribute7','Attribute9','Attribute10'
-              ,'Attribute12','Attribute14','Attribute15','Attribute17','Attribute19','Attribute20']
-infoGain = []
-for attribute in attributesCategorical:   
-    
-    rating_probs = df.groupby(attribute).size().div(len(df)) 
-   
-    a = df.groupby([attribute,'Label']).size()
-
-    keys = list([a.keys()[x][0] for x in range(len(a.keys()))])
-
-    values = list([i for i in a])
-
-    allVal = zip(keys,values)
-
-    terms =[]
-
-    r = zip(allVal,allVal[1:])[::2]
-   
-    for i in r:
-        entr1 = entropy(i[0][1],i[1][1])
-        result = rating_probs[i[0][0]]*entr1
-        terms.append(result)
-
-
-    entropyAttr = sum(terms)
-    numAttribute = attribute.replace('Attribute', '')
-    numAttribute = int(numAttribute)
-
-    infoGain.append(((parentEntropy - entropyAttr),numAttribute))
-print infoGain
-
-
-# In[35]:
-
-AttributesNumerical = ["Attribute2","Attribute5","Attribute8","Attribute11","Attribute13","Attribute16","Attribute18"]
-group_names = ['Very Low', 'Low', 'Medium', 'High', 'Very High']
-
-for attribute in AttributesNumerical:  
-    
-   
-    feature = df[attribute]
-    attributeCut = pd.cut(feature, 5, labels = group_names)
-
-    d = {attribute : pd.Series(attributeCut),
-            'Label' : pd.Series(df['Label'])}
-
-    d = pd.DataFrame(d)
-
-    a = d.groupby([attribute,'Label']).size()   
-    rating_probs = d.groupby(attribute).size().div(len(d))
- 
-
-    keys = list([a.keys()[x][0] for x in range(len(a.keys()))])
-
-    values = list([i for i in a])
-
-    allVal = zip(keys,values)
-
-    terms =[]
-
-    r = zip(allVal,allVal[1:])[::2]
-    print r
-
-    for i in range(len(r)):
-
-        entr2 = entropy(r[i][0][1],r[i][1][1])
-        result = rating_probs[i]*entr2
-        terms.append(result)
-
-
-    entropyAttr = sum(terms)
-    
-    numAttribute = attribute.replace('Attribute', '')
-    numAttribute = int(numAttribute)
-    
-    print "AAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
-    print parentEntropy
-    print entropyAttr
-
-    infoGain.append(((parentEntropy - entropyAttr),numAttribute))
-#print infoGain
-
-
-# In[33]:
-
-sortInfoGain = sorted(infoGain, key=lambda x: x[1])
-print sortInfoGain
-
-
-# In[ ]:
-
-
 
