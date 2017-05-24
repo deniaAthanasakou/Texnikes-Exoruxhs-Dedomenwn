@@ -3,7 +3,7 @@
  	10903	Good
  	10904	Good
  	10905	Good
- 	10906	Good
+ 	10906	Bad
  	10907	Good
  	10908	Good
  	10909	Bad
@@ -11,13 +11,13 @@
  	10911	Good
  	10912	Good
  	10913	Good
- 	10914	Good
+ 	10914	Bad
  	10915	Bad
- 	10916	Good
+ 	10916	Bad
  	10917	Good
  	10918	Good
  	10919	Bad
- 	10920	Bad
+ 	10920	Good
  	10921	Good
  	10922	Good
  	10923	Good
@@ -25,12 +25,12 @@
  	10925	Good
  	10926	Good
  	10927	Good
- 	10928	Bad
+ 	10928	Good
  	10929	Good
- 	10930	Good
+ 	10930	Bad
  	10931	Good
  	10932	Bad
- 	10933	Good
+ 	10933	Bad
  	10934	Good
  	10935	Good
  	10936	Bad
@@ -38,14 +38,14 @@
  	10938	Good
  	10939	Good
  	10940	Good
- 	10941	Good
+ 	10941	Bad
  	10942	Good
- 	10943	Bad
+ 	10943	Good
  	10944	Good
- 	10945	Bad
+ 	10945	Good
  	10946	Good
  	10947	Good
- 	10948	Bad
+ 	10948	Good
  	10949	Good
  	10950	Good
  	10951	Bad
@@ -55,22 +55,22 @@
  	10955	Good
  	10956	Good
  	10957	Good
- 	10958	Bad
- 	10959	Good
+ 	10958	Good
+ 	10959	Bad
  	10960	Good
  	10961	Good
- 	10962	Bad
- 	10963	Bad
+ 	10962	Good
+ 	10963	Good
  	10964	Good
  	10965	Good
  	10966	Good
  	10967	Good
  	10968	Good
  	10969	Good
- 	10970	Bad
+ 	10970	Good
  	10971	Good
  	10972	Good
- 	10973	Bad
+ 	10973	Good
  	10974	Good
  	10975	Good
  	10976	Good
@@ -83,21 +83,21 @@
  	10983	Good
  	10984	Good
  	10985	Good
- 	10986	Good
+ 	10986	Bad
  	10987	Good
- 	10988	Good
+ 	10988	Bad
  	10989	Good
- 	10990	Good
+ 	10990	Bad
  	10991	Good
  	10992	Good
  	10993	Good
  	10994	Good
  	10995	Good
  	10996	Good
- 	10997	Bad
+ 	10997	Good
  	10998	Good
  	10999	Good
- 	11000	Good
+ 	11000	Bad
  	11001	Good
  	11002	Good
  	11003	Good
@@ -127,14 +127,14 @@
  	11027	Good
  	11028	Bad
  	11029	Good
- 	11030	Bad
+ 	11030	Good
  	11031	Good
  	11032	Good
  	11033	Good
  	11034	Good
  	11035	Bad
  	11036	Good
- 	11037	Bad
+ 	11037	Good
  	11038	Good
  	11039	Bad
  	11040	Good
@@ -142,24 +142,24 @@
  	11042	Good
  	11043	Good
  	11044	Good
- 	11045	Bad
+ 	11045	Good
  	11046	Good
- 	11047	Good
- 	11048	Bad
+ 	11047	Bad
+ 	11048	Good
  	11049	Good
  	11050	Good
  	11051	Good
- 	11052	Good
+ 	11052	Bad
  	11053	Good
  	11054	Good
- 	11055	Good
+ 	11055	Bad
  	11056	Good
  	11057	Good
  	11058	Good
  	11059	Bad
  	11060	Good
  	11061	Good
- 	11062	Good
+ 	11062	Bad
  	11063	Good
  	11064	Good
  	11065	Good
@@ -171,7 +171,7 @@
  	11071	Good
  	11072	Good
  	11073	Bad
- 	11074	Good
+ 	11074	Bad
  	11075	Good
  	11076	Good
  	11077	Good
@@ -181,9 +181,9 @@
  	11081	Good
  	11082	Bad
  	11083	Bad
- 	11084	Good
+ 	11084	Bad
  	11085	Good
- 	11086	Bad
+ 	11086	Good
  	11087	Good
  	11088	Good
  	11089	Bad
@@ -194,7 +194,7 @@
  	11094	Bad
  	11095	Good
  	11096	Good
- 	11097	Good
+ 	11097	Bad
  	11098	Good
  	11099	Bad
  	11100	Good
