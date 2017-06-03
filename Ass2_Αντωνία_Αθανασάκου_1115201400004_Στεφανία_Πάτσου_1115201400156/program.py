@@ -1,7 +1,7 @@
 
 # coding: utf-8
 
-# In[123]:
+# In[160]:
 
 #imports
 import pandas as pd
@@ -9,6 +9,7 @@ pd.set_option('display.max_columns', None)
 pd.set_option('display.max_rows',None)
 pd.set_option('display.width', None)
 pd.set_option('display.max_colwidth',0)
+pd.options.mode.chained_assignment = None  # default='warn'
 import unicodedata
 
 from pandas import DataFrame
@@ -25,7 +26,7 @@ from __future__ import division
 import os
 
 
-# In[124]:
+# In[161]:
 
 df = pd.read_csv('train.tsv',sep='\t',encoding="utf-8")
 
@@ -33,7 +34,7 @@ good = df[df["Label"]==1]    #good
 bad = df[df["Label"]==2]    #bad
 
 
-# In[125]:
+# In[162]:
 
 #Numerical data box plot
 Attributes = ["Attribute2","Attribute5","Attribute8","Attribute11","Attribute13","Attribute16","Attribute18"]
@@ -107,11 +108,9 @@ for attribute in Attributes:
     figBox.savefig(filename)
 
 
-# In[126]:
+# In[163]:
 
 #categorical data histograms
-
-
 attributesCategorical = ['Attribute1','Attribute3','Attribute4','Attribute6','Attribute7','Attribute9','Attribute10'
               ,'Attribute12','Attribute14','Attribute15','Attribute17','Attribute19','Attribute20']
 
@@ -138,16 +137,27 @@ for item in attributesCategorical:
     figHist.savefig(filename)
 
 
-# In[127]:
+# In[164]:
 
 #preprocessing data
-from sklearn.feature_extraction.text import TfidfVectorizer
+
+from sklearn import preprocessing
 from sklearn.decomposition import TruncatedSVD
+from sklearn.feature_extraction.text import TfidfVectorizer
+
+le = preprocessing.LabelEncoder()
 
 withoutLabel = df.ix[:, df.columns != 'Label' ]
 withoutLabelAndId = withoutLabel.ix[:, withoutLabel.columns != 'Id' ]
+withoutLabelAndIdCategoricals = withoutLabelAndId[attributesCategorical]
+
 
 Count_Row = withoutLabelAndId.shape[0]
+
+TransformedCategoricals = withoutLabelAndIdCategoricals.apply(le.fit_transform)
+
+withoutLabelAndId.update(TransformedCategoricals)
+
 
 listOfDocuments= []
 for i in range(Count_Row):
@@ -166,10 +176,11 @@ tfidf_matrix = tfidf_vectorizer.fit_transform(tupleOfDocuments)
 tfidf_matrix = np.array(TruncatedSVD(n_components=10).fit_transform(tfidf_matrix))
 
 
-# In[128]:
+# In[165]:
 
 #creating y for classification
 X = np.array(tfidf_matrix)
+
 y = []
 for i in range(Count_Row):
     y.append(df["Label"].iloc[i]) 
@@ -177,7 +188,7 @@ for i in range(Count_Row):
 y = np.array(y)
 
 
-# In[129]:
+# In[166]:
 
 #classification
 from sklearn.svm import SVC
@@ -188,8 +199,9 @@ from sklearn.metrics import *
 
 random_state = np.random.RandomState(0)
 k_fold = KFold(n_splits=10,shuffle = True)
+
 #svm
-clf = SVC(kernel = 'linear' , C = 1.0, probability=True, random_state=random_state)
+clf = SVC(gamma=100, C=10)
 clf.fit(X, y)
 accuracySVM = cross_val_score(clf, X, y, cv=k_fold, n_jobs=-1 , scoring = 'accuracy')
 accuracyMeanSVM =np.mean(accuracySVM)
@@ -207,7 +219,7 @@ accuracyNB = cross_val_score(clf, X, y, cv=k_fold, n_jobs=-1 , scoring = 'accura
 accuracyMeanNB =np.mean(accuracyNB)
 
 
-# In[130]:
+# In[167]:
 
 #creating csv file for accuracy
 import csv
@@ -222,7 +234,7 @@ evalDf = pd.read_csv('Output/EvaluationMetric_10fold.csv',sep='\t',encoding="utf
 evalDf
 
 
-# In[131]:
+# In[168]:
 
 #removing id from df
 dfTest = pd.read_csv('test.tsv',sep='\t',encoding="utf-8")
@@ -230,11 +242,16 @@ dfTest = pd.read_csv('test.tsv',sep='\t',encoding="utf-8")
 withoutId = dfTest.ix[:, dfTest.columns != 'Id' ]
 
 
-# In[132]:
+# In[169]:
 
 #figuring out categories for testSet
 
 Count_RowTest = dfTest.shape[0]
+
+withoutIdCategoricals = withoutId[attributesCategorical]
+
+TransformedCategoricalsWithoutId = withoutIdCategoricals.apply(le.fit_transform)
+withoutId.update(TransformedCategoricalsWithoutId)
 
 listOfDocumentsTest= []
 IdList = []
@@ -281,7 +298,7 @@ dfPredict = pd.read_csv('Output/testSet_Predictions.csv',sep='\t',encoding="utf-
 dfPredict    
 
 
-# In[133]:
+# In[170]:
 
 #my function for entropy
 def entropy(num1,num2):
@@ -291,7 +308,7 @@ def entropy(num1,num2):
     return mathem
 
 
-# In[134]:
+# In[171]:
 
 #calculating parent Entropy
 Count_Row = df.shape[0]
@@ -301,7 +318,7 @@ counts = np.array(labelFeature.value_counts());
 parentEntropy = entropy(counts[0],counts[1])
 
 
-# In[135]:
+# In[172]:
 
 #calculating information gain for categorical data
 attributesCategorical = ['Attribute1','Attribute3','Attribute4','Attribute6','Attribute7','Attribute9','Attribute10'
@@ -347,7 +364,7 @@ for attribute in attributesCategorical:
     infoGain.append(((parentEntropy - entropyAttr),numAttribute))
 
 
-# In[136]:
+# In[173]:
 
 #calculating information gain for numerical data
 AttributesNumerical = ["Attribute2","Attribute5","Attribute8","Attribute11","Attribute13","Attribute16","Attribute18"]
@@ -404,7 +421,7 @@ for attribute in AttributesNumerical:
     infoGain.append(((parentEntropy - entropyAttr),numAttribute))
 
 
-# In[137]:
+# In[174]:
 
 sortInfoGain = sorted(infoGain, key=lambda x: x[1])
 sortInfoGainValue = sorted(infoGain, key=lambda x: x[0])
@@ -418,13 +435,18 @@ for x in range(len(sortInfoGainValue)):
 setAttr = setAttr[:-1]  #all but the last attribute
 
 
-# In[138]:
+# In[175]:
 
 #accuracy and attributes graph
 dfAttr = pd.read_csv('train.tsv',sep='\t',encoding="utf-8")
 
 dfAttr = dfAttr.ix[:, dfAttr.columns != 'Id' ]
 dfAttr = dfAttr.ix[:, dfAttr.columns != 'Label' ]
+
+withoutIdAndLabelCategoricals = dfAttr[attributesCategorical]
+
+TransformedCategoricalsWithoutIdAndLabel = withoutIdAndLabelCategoricals.apply(le.fit_transform)
+dfAttr.update(TransformedCategoricalsWithoutIdAndLabel)
 
 accuracyMeanList = []
 
@@ -471,7 +493,7 @@ print "Accuracy"
 print accuracyMeanList    
 
 
-# In[139]:
+# In[176]:
 
 #plot for accuracy depending on attribute
 plt.figure(figsize=(25,10))
@@ -502,7 +524,7 @@ plt.cla()
 plt.close()
 
 
-# In[140]:
+# In[177]:
 
 #creating csv for attributes and information gain
 with open('Output/infoGain.csv', 'wb') as fp:

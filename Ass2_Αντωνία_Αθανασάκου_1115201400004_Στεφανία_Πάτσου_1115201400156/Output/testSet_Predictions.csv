@@ -1,12 +1,12 @@
  	Client_ID	Predicted_Label
- 	10902	Good
+ 	10902	Bad
  	10903	Good
  	10904	Good
  	10905	Good
- 	10906	Bad
+ 	10906	Good
  	10907	Good
  	10908	Good
- 	10909	Bad
+ 	10909	Good
  	10910	Good
  	10911	Good
  	10912	Good
@@ -16,7 +16,7 @@
  	10916	Bad
  	10917	Good
  	10918	Good
- 	10919	Bad
+ 	10919	Good
  	10920	Good
  	10921	Good
  	10922	Good
@@ -29,9 +29,9 @@
  	10929	Good
  	10930	Bad
  	10931	Good
- 	10932	Bad
- 	10933	Bad
- 	10934	Good
+ 	10932	Good
+ 	10933	Good
+ 	10934	Bad
  	10935	Good
  	10936	Bad
  	10937	Good
@@ -48,15 +48,15 @@
  	10948	Good
  	10949	Good
  	10950	Good
- 	10951	Bad
+ 	10951	Good
  	10952	Good
  	10953	Good
- 	10954	Bad
- 	10955	Good
+ 	10954	Good
+ 	10955	Bad
  	10956	Good
  	10957	Good
  	10958	Good
- 	10959	Bad
+ 	10959	Good
  	10960	Good
  	10961	Good
  	10962	Good
@@ -65,34 +65,34 @@
  	10965	Good
  	10966	Good
  	10967	Good
- 	10968	Good
- 	10969	Good
+ 	10968	Bad
+ 	10969	Bad
  	10970	Good
  	10971	Good
  	10972	Good
  	10973	Good
  	10974	Good
- 	10975	Good
+ 	10975	Bad
  	10976	Good
- 	10977	Bad
+ 	10977	Good
  	10978	Good
- 	10979	Bad
- 	10980	Good
+ 	10979	Good
+ 	10980	Bad
  	10981	Good
  	10982	Bad
- 	10983	Good
+ 	10983	Bad
  	10984	Good
  	10985	Good
- 	10986	Bad
+ 	10986	Good
  	10987	Good
  	10988	Bad
- 	10989	Good
- 	10990	Bad
+ 	10989	Bad
+ 	10990	Good
  	10991	Good
  	10992	Good
  	10993	Good
- 	10994	Good
- 	10995	Good
+ 	10994	Bad
+ 	10995	Bad
  	10996	Good
  	10997	Good
  	10998	Good
@@ -100,101 +100,101 @@
  	11000	Bad
  	11001	Good
  	11002	Good
- 	11003	Good
+ 	11003	Bad
  	11004	Good
  	11005	Good
- 	11006	Bad
+ 	11006	Good
  	11007	Good
- 	11008	Good
+ 	11008	Bad
  	11009	Good
  	11010	Good
- 	11011	Good
+ 	11011	Bad
  	11012	Good
  	11013	Good
  	11014	Good
- 	11015	Bad
+ 	11015	Good
  	11016	Bad
  	11017	Good
- 	11018	Bad
+ 	11018	Good
  	11019	Good
  	11020	Good
  	11021	Good
- 	11022	Good
+ 	11022	Bad
  	11023	Good
- 	11024	Good
+ 	11024	Bad
  	11025	Good
- 	11026	Bad
+ 	11026	Good
  	11027	Good
  	11028	Bad
  	11029	Good
  	11030	Good
  	11031	Good
  	11032	Good
- 	11033	Good
- 	11034	Good
- 	11035	Bad
- 	11036	Good
+ 	11033	Bad
+ 	11034	Bad
+ 	11035	Good
+ 	11036	Bad
  	11037	Good
- 	11038	Good
- 	11039	Bad
+ 	11038	Bad
+ 	11039	Good
  	11040	Good
  	11041	Good
  	11042	Good
  	11043	Good
- 	11044	Good
+ 	11044	Bad
  	11045	Good
- 	11046	Good
- 	11047	Bad
+ 	11046	Bad
+ 	11047	Good
  	11048	Good
  	11049	Good
  	11050	Good
  	11051	Good
- 	11052	Bad
+ 	11052	Good
  	11053	Good
- 	11054	Good
+ 	11054	Bad
  	11055	Bad
  	11056	Good
  	11057	Good
  	11058	Good
- 	11059	Bad
+ 	11059	Good
  	11060	Good
- 	11061	Good
- 	11062	Bad
+ 	11061	Bad
+ 	11062	Good
  	11063	Good
  	11064	Good
  	11065	Good
  	11066	Good
  	11067	Good
  	11068	Good
- 	11069	Good
+ 	11069	Bad
  	11070	Good
  	11071	Good
  	11072	Good
  	11073	Bad
- 	11074	Bad
+ 	11074	Good
  	11075	Good
  	11076	Good
  	11077	Good
- 	11078	Good
+ 	11078	Bad
  	11079	Good
  	11080	Good
  	11081	Good
- 	11082	Bad
- 	11083	Bad
+ 	11082	Good
+ 	11083	Good
  	11084	Bad
  	11085	Good
  	11086	Good
  	11087	Good
  	11088	Good
  	11089	Bad
- 	11090	Good
+ 	11090	Bad
  	11091	Good
  	11092	Good
  	11093	Good
  	11094	Bad
  	11095	Good
  	11096	Good
- 	11097	Bad
+ 	11097	Good
  	11098	Good
- 	11099	Bad
+ 	11099	Good
  	11100	Good
